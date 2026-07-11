@@ -24,8 +24,8 @@ from database import init_db
 # Application factory
 # ---------------------------------------------------------------------------
 
-BASE_DIR = os.path.dirname(__file__)          # …/BACKEND
-PROJECT_ROOT = os.path.dirname(BASE_DIR)      # …/banking-app
+BASE_DIR = os.path.dirname(__file__)          # .../BACKEND
+PROJECT_ROOT = os.path.dirname(BASE_DIR)      # .../banking-app
 
 app = Flask(
     __name__,
@@ -52,18 +52,18 @@ def index():
     return redirect(url_for("login"))
 
 
-# ── Authentication ──────────────────────────────────────────────────────────
+# -- Authentication ----------------------------------------------------------
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # Already logged in — skip the form.
+    # Already logged in -- skip the form.
     if session.get("user_id"):
         return redirect(url_for("dashboard"))
 
     if request.method == "GET":
         return render_template("login.html")
 
-    # POST — process credentials
+    # POST -- process credentials
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
 
@@ -84,7 +84,7 @@ def login():
             error="Invalid credentials. Please try again."
         )
 
-    # Credentials valid — create session
+    # Credentials valid -- create session
     session.clear()
     session["user_id"] = customer.id
     return redirect(url_for("dashboard"))
@@ -97,7 +97,7 @@ def logout():
     return redirect(url_for("login"))
 
 
-# ── Dashboard ───────────────────────────────────────────────────────────────
+# -- Dashboard ---------------------------------------------------------------
 
 @app.route("/dashboard")
 @login_required
@@ -113,7 +113,7 @@ def dashboard():
     )
 
 
-# ── Deposit ─────────────────────────────────────────────────────────────────
+# -- Deposit -----------------------------------------------------------------
 
 @app.route("/deposit", methods=["GET", "POST"])
 @login_required
@@ -121,7 +121,7 @@ def deposit():
     if request.method == "GET":
         return render_template("deposit.html")
 
-    # POST — validate then apply
+    # POST -- validate then apply
     raw_amount = request.form.get("amount", "").strip()
 
     if not raw_amount:
@@ -139,7 +139,7 @@ def deposit():
     return redirect(url_for("dashboard"))
 
 
-# ── Withdraw ─────────────────────────────────────────────────────────────────
+# -- Withdraw ----------------------------------------------------------------
 
 @app.route("/withdraw", methods=["GET", "POST"])
 @login_required
@@ -150,25 +150,30 @@ def withdraw():
         balance = get_balance(customer_id)
         return render_template("withdraw.html", balance=balance)
 
-    # POST — validate then apply
+    # POST -- read the form amount
     raw_amount = request.form.get("amount", "").strip()
 
+    # Validation check 1: amount field must not be empty
     if not raw_amount:
         balance = get_balance(customer_id)
         return render_template("withdraw.html", balance=balance,
-                               error="Please enter an amount.")
+                               error="Amount is required")
 
+    # Validation check 2: amount must be a positive number
     try:
         amount = float(raw_amount)
     except ValueError:
-        balance = get_balance(customer_id)
-        return render_template("withdraw.html", balance=balance,
-                               error="Please enter a valid number.")
-
+        amount = 0
     if amount <= 0:
         balance = get_balance(customer_id)
         return render_template("withdraw.html", balance=balance,
-                               error="Amount must be greater than zero.")
+                               error="Amount must be greater than zero")
+
+    # Validation check 3: amount must not exceed current balance
+    balance = get_balance(customer_id)
+    if amount > balance:
+        return render_template("withdraw.html", balance=balance,
+                               error="Insufficient funds")
 
     try:
         apply_withdrawal(customer_id, amount)
