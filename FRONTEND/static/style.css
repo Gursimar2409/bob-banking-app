@@ -1,0 +1,62 @@
+/*
+ * style.css
+ * Custom overrides layered on top of Bootstrap 5.
+ * Keep minimal — Bootstrap handles the heavy lifting.
+ */
+
+/* ── Global ──────────────────────────────────────────────────────────────── */
+body {
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* ── Login page bank-logo circle ─────────────────────────────────────────── */
+.bank-logo {
+  width: 64px;
+  height: 64px;
+  background-color: #e7f1ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bank-logo-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* ── Dashboard balance display ───────────────────────────────────────────── */
+.display-4 {
+  font-size: 2.8rem;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────────────────── */
+.navbar {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.card {
+  border-radius: 0.75rem;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn {
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* ── Transaction table ───────────────────────────────────────────────────── */
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+/* ── Responsive tweaks ───────────────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .display-4 {
+    font-size: 2rem;
+  }
+}
